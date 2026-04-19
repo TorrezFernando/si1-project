@@ -3,10 +3,14 @@
 @section('title', 'Panel de Control')
 
 @section('content_header')
+<<<<<<< HEAD
     <div class="d-flex justify-content-between align-items-center">
         <h1>Datos del sistema</h1>
         <a href="{{ route('admin.password.edit') }}" class="btn btn-warning"><i class="fas fa-key"></i> Cambiar contraseña</a>
     </div>
+=======
+    <h1>Datos del sistema </h1>
+>>>>>>> 7abfc1b306a29fb563573d62b2755743c6aaad8f
     <hr>
 @stop
 

@@ -323,16 +323,24 @@ return [
 
         ],
         [
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 7abfc1b306a29fb563573d62b2755743c6aaad8f
             'text' => 'Turnos',
             'url' => 'admin/turnos',
             'icon' => 'fas fa-fw fa-clock',
             'classes' => 'bg-blue text-white',
+<<<<<<< HEAD
         ],
         [
             'text' => 'Bitácora',
             'url'  => 'admin/bitacora',
             'icon' => 'fas fa-fw fa-history',
             'classes' => 'bg-blue text-white',
+=======
+
+>>>>>>> 7abfc1b306a29fb563573d62b2755743c6aaad8f
         ],
        
     ],

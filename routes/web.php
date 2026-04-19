@@ -10,18 +10,24 @@ Route::get('/', function () {
 // Rutas de autenticación (Login, Registro, etc.)
 Auth::routes();
 
+<<<<<<< HEAD
 Route::get('/olvido-password', function () {
     return view('auth.olvido');
 });
 
+=======
+>>>>>>> 7abfc1b306a29fb563573d62b2755743c6aaad8f
 // Ruta de tu panel de control principal
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 // rutas para configuracion del sistema
 Route::get('/admin/configuracion', [App\Http\Controllers\Admin\ConfiguracionController::class, 'index'])->name('admin.configuracion.index')->middleware('auth');
 Route::post('/admin/configuracion/create', [App\Http\Controllers\Admin\ConfiguracionController::class , 'store'])->name('admin.configuracion.store')->middleware('auth');
+<<<<<<< HEAD
 
 Route::get('/admin/password', [App\Http\Controllers\Admin\CambiarPasswordController::class, 'edit'])->name('admin.password.edit')->middleware('auth');
 Route::put('/admin/password', [App\Http\Controllers\Admin\CambiarPasswordController::class, 'update'])->name('admin.password.update')->middleware('auth');
+=======
+>>>>>>> 7abfc1b306a29fb563573d62b2755743c6aaad8f
 // rutas para las gestiones del sistema
 Route::get('/admin/gestiones', [App\Http\Controllers\GestionController::class, 'index'])->name('admin.gestiones.index')->middleware('auth');
 Route::get('/admin/gestiones/create', [App\Http\Controllers\GestionController::class, 'create'])->name('admin.gestiones.create')->middleware('auth');
@@ -41,6 +47,9 @@ Route::post('/admin/turnos/create', [App\Http\Controllers\TurnoController::class
 Route::get('/admin/turnos/{id}/edit', [App\Http\Controllers\TurnoController::class, 'edit'])->name('admin.turnos.edit')->middleware('auth');
 Route::put('/admin/turnos/{id}', [App\Http\Controllers\TurnoController::class, 'update'])->name('admin.turnos.update')->middleware('auth');
 Route::delete('/admin/turnos/{id}', [App\Http\Controllers\TurnoController::class, 'destroy'])->name('admin.turnos.destroy')->middleware('auth');
+<<<<<<< HEAD
 
 // rutas para la bitacora de accesos
 Route::get('/admin/bitacora', [App\Http\Controllers\Admin\BitacoraController::class, 'index'])->name('admin.bitacora.index')->middleware('auth');
+=======
+>>>>>>> 7abfc1b306a29fb563573d62b2755743c6aaad8f

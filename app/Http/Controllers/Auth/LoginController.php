@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+<<<<<<< HEAD
 use Illuminate\Http\Request;
 use App\Models\Bitacora;
 
@@ -11,6 +12,11 @@ class LoginController extends Controller
 {
     protected $maxAttempts = 3; // Bloqueo al tercer intento fallido
     protected $decayMinutes = 15; // Bloqueado por 15 minutos
+=======
+
+class LoginController extends Controller
+{
+>>>>>>> 7abfc1b306a29fb563573d62b2755743c6aaad8f
     /*
     |--------------------------------------------------------------------------
     | Login Controller
@@ -41,6 +47,7 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
     }
+<<<<<<< HEAD
 
     public function username()
     {
@@ -56,4 +63,6 @@ class LoginController extends Controller
             'ip' => $request->ip()
         ]);
     }
+=======
+>>>>>>> 7abfc1b306a29fb563573d62b2755743c6aaad8f
 }
