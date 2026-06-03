@@ -33,7 +33,7 @@ class FichaMedicaController extends Controller
                     });
             })
             ->orderByDesc('id_ficha')
-            ->get();
+            ->paginate(15)->appends(['search' => $search]);
 
         return view('admin.fichas_medicas.index', compact('fichas', 'search'));
     }

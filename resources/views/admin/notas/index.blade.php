@@ -3,176 +3,146 @@
 @section('title', 'Gestionar Notas')
 
 @section('content_header')
-    <h1><b>Gestionar Notas</b></h1>
-    <hr>
+    <h1>Notas</h1>
 @stop
 
 @section('content')
-    <div class="card card-outline card-primary">
-        <div class="card-header">
-            <h3 class="card-title">CU15: Gesti&oacute;n de calificaciones</h3>
-            <a href="{{ route('admin.notas.create') }}" class="btn btn-primary btn-sm float-right">
-                <i class="fas fa-plus"></i> Registrar Nota
+    <div class="list-header">
+        <div class="list-info">
+            <h4>{{ $notas->total() }} {{ $notas->total() == 1 ? 'calificacion' : 'calificaciones' }}</h4>
+            <p>Gestion de calificaciones por alumno, materia y trimestre</p>
+        </div>
+        <div class="list-toolbar">
+            <a href="{{ route('admin.notas.create') }}" class="btn-add">
+                <i class="fas fa-plus mr-1"></i> Registrar Nota
             </a>
         </div>
-        <div class="card-body">
-            <form action="{{ route('admin.notas.index') }}" method="GET" class="mb-3">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Buscar</label>
-                            <input type="text" name="search" class="form-control" placeholder="Estudiante, materia, curso..." value="{{ $search ?? '' }}">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label>Gesti&oacute;n</label>
-                            <select name="id_gestion" class="form-control">
-                                <option value="">Todas</option>
-                                @foreach($gestiones as $gestion)
-                                    <option value="{{ $gestion->id_gestion }}" {{ (string) $idGestion === (string) $gestion->id_gestion ? 'selected' : '' }}>
-                                        {{ $gestion->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label>Curso</label>
-                            <select name="id_curso" class="form-control">
-                                <option value="">Todos</option>
-                                @foreach($cursos as $curso)
-                                    <option value="{{ $curso->id_curso }}" {{ (string) $idCurso === (string) $curso->id_curso ? 'selected' : '' }}>
-                                        {{ $curso->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label>Materia</label>
-                            <select name="id_materia" class="form-control">
-                                <option value="">Todas</option>
-                                @foreach($materias as $materia)
-                                    <option value="{{ $materia->id_materia }}" {{ (string) $idMateria === (string) $materia->id_materia ? 'selected' : '' }}>
-                                        {{ $materia->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label>Trimestre</label>
-                            <select name="id_trimestre" class="form-control">
-                                <option value="">Todos</option>
-                                @foreach($trimestres as $trimestre)
-                                    <option value="{{ $trimestre->id_trimestre }}" {{ (string) $idTrimestre === (string) $trimestre->id_trimestre ? 'selected' : '' }}>
-                                        Trimestre {{ $trimestre->id_trimestre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-1 d-flex align-items-end">
-                        <div class="form-group w-100">
-                            <button type="submit" class="btn btn-info btn-block" title="Buscar notas">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <a href="{{ route('admin.notas.index') }}" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-list"></i> Mostrar todo
-                </a>
-            </form>
+    </div>
 
+    <div class="card" style="overflow: hidden;">
+        <div class="card-header" style="border-bottom: 1px solid #e2e8f0;">
+            <form action="{{ route('admin.notas.index') }}" method="GET" class="row align-items-end" style="row-gap: 0.5rem;">
+                <div class="col-md-3">
+                    <input type="text" name="search" class="form-control" placeholder="Estudiante, materia, curso..." value="{{ $search ?? '' }}" style="border-radius: 8px;">
+                </div>
+                <div class="col-md-2">
+                    <select name="id_gestion" class="form-control" style="border-radius: 8px;">
+                        <option value="">Gestion</option>
+                        @foreach($gestiones as $g)
+                            <option value="{{ $g->id_gestion }}" {{ (string) $idGestion === (string) $g->id_gestion ? 'selected' : '' }}>{{ $g->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="id_curso" class="form-control" style="border-radius: 8px;">
+                        <option value="">Curso</option>
+                        @foreach($cursos as $c)
+                            <option value="{{ $c->id_curso }}" {{ (string) $idCurso === (string) $c->id_curso ? 'selected' : '' }}>{{ $c->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="id_materia" class="form-control" style="border-radius: 8px;">
+                        <option value="">Materia</option>
+                        @foreach($materias as $m)
+                            <option value="{{ $m->id_materia }}" {{ (string) $idMateria === (string) $m->id_materia ? 'selected' : '' }}>{{ $m->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="id_trimestre" class="form-control" style="border-radius: 8px;">
+                        <option value="">Trimestre</option>
+                        @foreach($trimestres as $t)
+                            <option value="{{ $t->id_trimestre }}" {{ (string) $idTrimestre === (string) $t->id_trimestre ? 'selected' : '' }}>{{ $t->id_trimestre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-1 d-flex gap-2">
+                    <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-search"></i></button>
+                    <a href="{{ route('admin.notas.index') }}" class="btn btn-sm btn-secondary"><i class="fas fa-list"></i></a>
+                </div>
+            </form>
+        </div>
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover table-sm">
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>Estudiante</th>
                             <th>Curso</th>
                             <th>Materia</th>
-                            <th>Gesti&oacute;n</th>
-                            <th>Trimestre</th>
+                            <th style="width: 80px;">Gestion</th>
+                            <th style="width: 80px;">Trim.</th>
                             <th class="text-center">Ser</th>
                             <th class="text-center">Saber</th>
                             <th class="text-center">Hacer</th>
                             <th class="text-center">Autoev.</th>
                             <th class="text-center">Promedio</th>
-                            <th style="width: 180px;" class="text-center">Acciones</th>
+                            <th style="width: 100px;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($notas as $nota)
-                            <tr>
-                                <td>{{ $nota->alumno }}</td>
-                                <td>{{ $nota->curso }}</td>
-                                <td>{{ $nota->materia }}</td>
-                                <td>{{ $nota->gestion }}</td>
-                                <td>{{ $nota->trimestre }}</td>
-                                <td class="text-center">{{ $nota->ser }}</td>
-                                <td class="text-center">{{ $nota->saber }}</td>
-                                <td class="text-center">{{ $nota->hacer }}</td>
-                                <td class="text-center">{{ $nota->autoevaluacion }}</td>
-                                <td class="text-center">
-                                    <span class="badge badge-primary">{{ number_format($nota->promediofinal, 2) }}</span>
-                                </td>
-                                <td class="text-center text-nowrap">
-                                    <a href="{{ route('admin.notas.edit', [$nota->id_alumno, $nota->id_materia, $nota->id_gestion, $nota->id_curso, $nota->id_trimestre]) }}" class="btn btn-success btn-sm" title="Editar nota">
-                                        <i class="fas fa-pencil-alt"></i>
+                        <tr>
+                            <td><span style="font-weight: 600; color: #1e293b;">{{ $nota->alumno }}</span></td>
+                            <td>{{ $nota->curso }}</td>
+                            <td>{{ $nota->materia }}</td>
+                            <td>{{ $nota->gestion }}</td>
+                            <td><span class="badge-chip">{{ $nota->trimestre }}</span></td>
+                            <td class="text-center">{{ $nota->ser }}</td>
+                            <td class="text-center">{{ $nota->saber }}</td>
+                            <td class="text-center">{{ $nota->hacer }}</td>
+                            <td class="text-center">{{ $nota->autoevaluacion }}</td>
+                            <td class="text-center">
+                                <span class="badge-chip" style="background: #dbeafe; color: #1e40af; font-weight: 700;">
+                                    {{ number_format((float) $nota->promediofinal, 2) }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{{ route('admin.notas.edit', [$nota->id_alumno, $nota->id_materia, $nota->id_gestion, $nota->id_curso, $nota->id_trimestre]) }}"
+                                       class="btn-icon btn-icon-edit" title="Editar">
+                                        <i class="fas fa-pen"></i>
                                     </a>
-                                    <form action="{{ route('admin.notas.destroy', [$nota->id_alumno, $nota->id_materia, $nota->id_gestion, $nota->id_curso, $nota->id_trimestre]) }}" method="POST" id="form-delete-{{ $nota->id_alumno }}-{{ $nota->id_materia }}-{{ $nota->id_gestion }}-{{ $nota->id_curso }}-{{ $nota->id_trimestre }}" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="btn btn-danger btn-sm" title="Eliminar nota" onclick="confirmarEliminar('{{ $nota->id_alumno }}-{{ $nota->id_materia }}-{{ $nota->id_gestion }}-{{ $nota->id_curso }}-{{ $nota->id_trimestre }}', '{{ addslashes($nota->alumno) }}')">
-                                            <i class="fas fa-trash-alt"></i>
+                                    <form action="{{ route('admin.notas.destroy', [$nota->id_alumno, $nota->id_materia, $nota->id_gestion, $nota->id_curso, $nota->id_trimestre]) }}"
+                                          method="POST" class="form-delete" style="display:inline;">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn-icon btn-icon-delete" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
-                                </td>
-                            </tr>
+                                </div>
+                            </td>
+                        </tr>
                         @empty
-                            <tr>
-                                <td colspan="11" class="text-center">No se encontraron notas registradas.</td>
-                            </tr>
+                        <tr>
+                            <td colspan="11">
+                                <div class="empty-state">
+                                    <div class="empty-icon">📊</div>
+                                    <h5>Sin calificaciones</h5>
+                                    <p>No se encontraron notas registradas.</p>
+                                </div>
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
+
+        @if($notas->hasPages())
+        <div class="card-footer list-card-footer">
+            <div class="list-pagination-bar">
+                <small class="pagination-summary">
+                    Mostrando {{ $notas->firstItem() }}-{{ $notas->lastItem() }} de {{ $notas->total() }}
+                </small>
+                {{ $notas->links('admin.partials.list-pagination') }}
+            </div>
+        </div>
+        @endif
     </div>
 @stop
 
 @section('js')
-<script>
-    function confirmarEliminar(key, alumno) {
-        Swal.fire({
-            title: 'Estas seguro?',
-            html: `Se eliminara la nota registrada para <strong>${alumno}</strong>.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: '<i class="fas fa-trash-alt"></i> Si, eliminar',
-            cancelButtonText: '<i class="fas fa-times"></i> Cancelar',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('form-delete-' + key).submit();
-            }
-        });
-    }
-
-    @if (Session::has('mensaje'))
-        Swal.fire({
-            icon: "{{ Session::get('icono') }}",
-            title: "{{ Session::get('mensaje') }}",
-            showConfirmButton: false,
-            timer: 3500
-        });
-    @endif
-</script>
+    @include('admin.partials.crud-alerts')
 @stop

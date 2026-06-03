@@ -3,130 +3,170 @@
 @section('title', 'Profesores')
 
 @section('content_header')
-    <h1><b>Profesores</b></h1>
-    <hr>
+    <h1>Profesores</h1>
 @stop
 
 @section('content')
-    <div class="card card-outline card-primary">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title">Accesos de profesores</h3>
-            <div class="d-flex align-items-center">
-                <span class="badge {{ $totalProfesores >= 20 ? 'badge-danger' : 'badge-primary' }} mr-3">
-                    {{ $totalProfesores }} / 20 profesores
-                </span>
-                @if ($totalProfesores < 20)
-                    <a href="{{ route('admin.profesores.create') }}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-user-plus"></i> Añadir Profesor
-                    </a>
-                @else
-                    <button class="btn btn-secondary btn-sm" disabled title="Límite de 20 profesores alcanzado">
-                        <i class="fas fa-user-plus"></i> Añadir Profesor
-                    </button>
-                @endif
-            </div>
+    <div class="list-header">
+        <div class="list-info">
+            <h4>{{ $totalProfesores }} {{ $totalProfesores == 1 ? 'profesor' : 'profesores' }}</h4>
+            <p>Gestion de docentes y sus accesos al sistema</p>
         </div>
-        <div class="card-body">
+        <div class="list-toolbar">
+            <span class="capacity-badge {{ $totalProfesores >= 20 ? 'full' : '' }}">
+                <i class="fas {{ $totalProfesores >= 20 ? 'fa-exclamation-triangle' : 'fa-users' }}"></i>
+                {{ $totalProfesores }}/20
+            </span>
+            <a href="{{ route('admin.profesores.create') }}"
+               class="btn-add {{ $totalProfesores >= 20 ? 'disabled' : '' }}"
+               @if($totalProfesores >= 20) style="opacity: 0.5; pointer-events: none;" @endif>
+                <i class="fas fa-plus mr-1"></i> Añadir Profesor
+            </a>
+        </div>
+    </div>
 
-            @if ($totalProfesores >= 20)
-                <div class="alert alert-warning d-flex align-items-center" role="alert">
-                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                    <span><strong>Capacidad al tope:</strong> Se ha alcanzado el límite máximo de 20 profesores. Para añadir uno nuevo, primero elimine un profesor existente.</span>
-                </div>
-            @endif
+    @if($totalProfesores >= 20)
+    <div class="alert alert-warning" style="border-radius: 10px; border-left: 4px solid #f59e0b;">
+        <i class="fas fa-exclamation-triangle mr-2"></i>
+        Capacidad maxima alcanzada (20 profesores). Elimina registros para añadir nuevos.
+    </div>
+    @endif
 
+    <div class="card" style="overflow: hidden;">
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover table-sm">
+                <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Nro</th>
+                            <th style="width: 50px;">#</th>
                             <th>Profesor</th>
-                            <th>Correo</th>
+                            <th>Contacto</th>
                             <th>Usuario</th>
-                            <th>Horario habilitado</th>
-                            <th>Acciones</th>
+                            <th style="width: 100px;">Horario</th>
+                            <th style="width: 130px;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($profesores as $profesor)
-                            <tr>
-                                <td class="text-center">{{ $loop->iteration }}</td>
-                                <td>{{ trim($profesor->nombre . ' ' . $profesor->ap_paterno . ' ' . $profesor->ap_materno) }}</td>
-                                <td>{{ $profesor->correo }}</td>
-                                <td>{{ optional($profesor->usuario)->username ?? 'Sin usuario' }}</td>
-                                <td>
-                                    @if (optional($profesor->permiso)->puede_ver_horario)
-                                        <span class="badge badge-success">Si</span>
-                                    @else
-                                        <span class="badge badge-danger">No</span>
+                        @forelse($profesores as $index => $profesor)
+                        @php
+                            $fullName = trim($profesor->nombre . ' ' . $profesor->ap_paterno . ' ' . ($profesor->ap_materno ?? ''));
+                            $initials = strtoupper(substr($profesor->nombre, 0, 1) . substr($profesor->ap_paterno, 0, 1));
+                            $horarioHabilitado = $profesor->permiso && $profesor->permiso->puede_ver_horario;
+                        @endphp
+                        <tr>
+                            <td><span class="badge-chip">{{ $profesores->firstItem() + $index }}</span></td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="avatar" style="background: linear-gradient(135deg, #7c3aed, #a78bfa);">{{ $initials }}</div>
+                                    <div class="user-info">
+                                        <div class="user-name">{{ $fullName }}</div>
+                                        <div class="user-detail">CI: {{ $profesor->ci }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-size: 0.82rem; color: #64748b;">
+                                    @if($profesor->correo)
+                                        <i class="fas fa-envelope mr-1" style="font-size: 0.7rem;"></i> {{ $profesor->correo }}<br>
                                     @endif
-                                </td>
-                                <td class="text-nowrap">
-                                    {{-- Editar datos del profesor --}}
+                                    @if($profesor->telefono)
+                                        <i class="fas fa-phone-alt mr-1" style="font-size: 0.7rem;"></i> {{ $profesor->telefono }}
+                                    @else
+                                        <span style="color: #cbd5e1;">—</span>
+                                    @endif
+                                </div>
+                            </td>
+                            <td>
+                                <span style="font-weight: 600; color: #1e293b;">
+                                    {{ $profesor->usuario->username ?? '—' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge {{ $horarioHabilitado ? 'on' : 'off' }}">
+                                    <span class="status-dot"></span>
+                                    {{ $horarioHabilitado ? 'Si' : 'No' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-btns">
                                     <a href="{{ route('admin.profesores.editInfo', $profesor->id_profesor) }}"
-                                       class="btn btn-primary btn-sm"
-                                       title="Editar datos del profesor">
-                                        <i class="fas fa-user-edit"></i> Editar
+                                       class="btn-icon btn-icon-edit" title="Editar datos">
+                                        <i class="fas fa-pen"></i>
                                     </a>
-
-                                    {{-- Editar acceso --}}
                                     <a href="{{ route('admin.profesores.edit', $profesor->id_profesor) }}"
-                                       class="btn btn-success btn-sm"
-                                       title="Editar acceso del profesor">
-                                        <i class="fas fa-pencil-alt"></i> Editar acceso
+                                       class="btn-icon btn-icon-key" title="Editar acceso">
+                                        <i class="fas fa-key"></i>
                                     </a>
-
-                                    {{-- Eliminar --}}
-                                    <form action="{{ route('admin.profesores.destroy', $profesor->id_profesor) }}"
-                                          method="POST"
-                                          id="form-delete-{{ $profesor->id_profesor }}"
-                                          style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button"
-                                                class="btn btn-danger btn-sm"
-                                                title="Eliminar profesor"
-                                                onclick="confirmarEliminar({{ $profesor->id_profesor }}, '{{ addslashes(trim($profesor->nombre . ' ' . $profesor->ap_paterno . ' ' . $profesor->ap_materno)) }}')">
-                                            <i class="fas fa-trash-alt"></i> Eliminar
-                                        </button>
+                                    <button type="button"
+                                            class="btn-icon btn-icon-delete"
+                                            title="Eliminar"
+                                            onclick="confirmarEliminar('{{ $fullName }}', {{ $profesor->id_profesor }})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <form id="form-eliminar-{{ $profesor->id_profesor }}"
+                                          action="{{ route('admin.profesores.destroy', $profesor->id_profesor) }}"
+                                          method="POST" style="display:none;">
+                                        @csrf @method('DELETE')
                                     </form>
-                                </td>
-                            </tr>
-                        @endforeach
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <div class="empty-icon">👩‍🏫</div>
+                                    <h5>Sin profesores</h5>
+                                    <p>No hay docentes registrados en el sistema.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
+
+        @if($profesores->hasPages())
+        <div class="card-footer list-card-footer">
+            <div class="list-pagination-bar">
+                <small class="pagination-summary">
+                    Mostrando {{ $profesores->firstItem() }}-{{ $profesores->lastItem() }} de {{ $profesores->total() }}
+                </small>
+                {{ $profesores->links('admin.partials.list-pagination') }}
+            </div>
+        </div>
+        @endif
     </div>
 @stop
 
 @section('js')
-<script>
-    function confirmarEliminar(id, nombre) {
-        Swal.fire({
-            title: '¿Estás seguro?',
-            html: `Estás a punto de eliminar al profesor <strong>${nombre}</strong>.<br>Esta acción no se puede deshacer.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: '<i class="fas fa-trash-alt"></i> Sí, eliminar',
-            cancelButtonText: '<i class="fas fa-times"></i> Cancelar',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('form-delete-' + id).submit();
-            }
-        });
-    }
+    <script>
+        function confirmarEliminar(nombre, id) {
+            Swal.fire({
+                title: 'Eliminar profesor',
+                text: '¿Desea eliminar a ' + nombre + '?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Si, eliminar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-eliminar-' + id).submit();
+                }
+            });
+        }
 
-    @if (Session::has('mensaje'))
+        @if(session('mensaje'))
         Swal.fire({
-            icon: "{{ Session::get('icono') }}",
-            title: "{{ Session::get('mensaje') }}",
+            position: 'top-end',
+            icon: '{{ session('icono', 'success') }}',
+            title: '{{ session('mensaje') }}',
             showConfirmButton: false,
-            timer: 4000
+            timer: 3500
         });
-    @endif
-</script>
+        @endif
+    </script>
 @stop

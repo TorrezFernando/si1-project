@@ -36,7 +36,7 @@ class HorarioController extends Controller
             ->orderBy('pa.descripcion')
             ->orderByRaw("FIELD(h.dia, 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes')")
             ->orderBy('h.hora_inicio')
-            ->get();
+            ->paginate(15)->appends($request->except('page'));
 
         $dias = self::DIAS;
 

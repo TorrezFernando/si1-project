@@ -3,8 +3,7 @@
 @section('title', 'Añadir Profesor')
 
 @section('content_header')
-    <h1><b>Registrar nuevo profesor</b></h1>
-    <hr>
+    <h1>Registrar nuevo profesor</h1>
 @stop
 
 @section('content')

@@ -3,104 +3,94 @@
 @section('title', 'Materias')
 
 @section('content_header')
-    <h1><b>Materias</b></h1>
-    <hr>
+    <h1>Materias</h1>
 @stop
 
 @section('content')
-    <div class="card card-outline card-primary">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title">Gestión de Materias</h3>
-            <div class="d-flex flex-wrap align-items-center ml-auto gap-2">
-                <form action="{{ route('admin.materias.index') }}" method="GET" class="form-inline mb-2 mb-md-0" id="filter-form">
-                    <div class="input-group input-group-sm mr-2">
-                        <input type="text" name="search" class="form-control" placeholder="Buscar materia..." value="{{ $search ?? '' }}">
-                        <span class="input-group-append">
-                            <button type="submit" class="btn btn-info btn-flat"><i class="fas fa-search"></i> Buscar</button>
-                        </span>
-                    </div>
-
-                    <a href="{{ route('admin.materias.index') }}" class="btn btn-secondary btn-sm" title="Limpiar filtros">
-                        <i class="fas fa-list"></i> Mostrar todo
-                    </a>
-                </form>
-
-                <a href="{{ route('admin.materias.create') }}" class="btn btn-primary btn-sm ml-2">
-                    <i class="fas fa-plus"></i> Nueva Materia
-                </a>
-            </div>
+    <div class="list-header">
+        <div class="list-info">
+            <h4>{{ $materias->total() }} {{ $materias->total() == 1 ? 'materia' : 'materias' }}</h4>
+            <p>Gestion de materias y campos de saberes</p>
         </div>
-        <div class="card-body">
+        <div class="list-toolbar">
+            <form method="GET" class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Buscar materia...">
+            </form>
+            <a href="{{ route('admin.materias.index') }}" class="btn btn-sm btn-secondary" style="border-radius: 10px;">
+                <i class="fas fa-list mr-1"></i> Todo
+            </a>
+            <a href="{{ route('admin.materias.create') }}" class="btn-add">
+                <i class="fas fa-plus mr-1"></i> Nueva Materia
+            </a>
+        </div>
+    </div>
+
+    <div class="card" style="overflow: hidden;">
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover table-sm">
+                <table class="data-table">
                     <thead>
                         <tr>
-                            <th style="width: 50px;" class="text-center">ID</th>
-                            <th>Nombre de la Materia</th>
+                            <th style="width: 60px;">ID</th>
+                            <th>Nombre</th>
                             <th>Distintivo</th>
                             <th>Campo de Saberes</th>
-                            <th style="width: 200px;" class="text-center">Acciones</th>
+                            <th style="width: 100px;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($materias as $materia)
-                            <tr>
-                                <td class="text-center">{{ $materia->id_materia }}</td>
-                                <td>{{ $materia->nombre }}</td>
-                                <td>{{ $materia->distintivo }}</td>
-                                <td>{{ $materia->campo ? $materia->campo->descripcion : 'N/A' }}</td>
-                                <td class="text-center text-nowrap">
-                                    <a href="{{ route('admin.materias.edit', $materia->id_materia) }}" class="btn btn-success btn-sm" title="Editar materia">
-                                        <i class="fas fa-pencil-alt"></i> Editar
+                        @forelse($materias as $materia)
+                        <tr>
+                            <td><span class="badge-chip">{{ $materia->id_materia }}</span></td>
+                            <td><span style="font-weight: 600; color: #1e293b;">{{ $materia->nombre }}</span></td>
+                            <td>{{ $materia->distintivo ?: '—' }}</td>
+                            <td>{{ $materia->campo ? $materia->campo->descripcion : 'N/A' }}</td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{{ route('admin.materias.edit', $materia->id_materia) }}"
+                                       class="btn-icon btn-icon-edit" title="Editar">
+                                        <i class="fas fa-pen"></i>
                                     </a>
-                                    <form action="{{ route('admin.materias.destroy', $materia->id_materia) }}" method="POST" id="form-delete-{{ $materia->id_materia }}" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="btn btn-danger btn-sm" title="Eliminar materia" onclick="confirmarEliminar({{ $materia->id_materia }}, '{{ addslashes($materia->nombre) }}')">
-                                            <i class="fas fa-trash-alt"></i> Eliminar
+                                    <form action="{{ route('admin.materias.destroy', $materia->id_materia) }}"
+                                          method="POST" class="form-delete" style="display:inline;">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn-icon btn-icon-delete" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
-                                </td>
-                            </tr>
+                                </div>
+                            </td>
+                        </tr>
                         @empty
-                            <tr>
-                                <td colspan="6" class="text-center">No se encontraron materias.</td>
-                            </tr>
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <div class="empty-icon">📖</div>
+                                    <h5>Sin materias</h5>
+                                    <p>No se encontraron materias registradas.</p>
+                                </div>
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
+
+        @if($materias->hasPages())
+        <div class="card-footer list-card-footer">
+            <div class="list-pagination-bar">
+                <small class="pagination-summary">
+                    Mostrando {{ $materias->firstItem() }}-{{ $materias->lastItem() }} de {{ $materias->total() }}
+                </small>
+                {{ $materias->links('admin.partials.list-pagination') }}
+            </div>
+        </div>
+        @endif
     </div>
 @stop
 
 @section('js')
-<script>
-    function confirmarEliminar(id, nombre) {
-        Swal.fire({
-            title: '¿Estás seguro?',
-            html: `Estás a punto de eliminar la materia <strong>${nombre}</strong>.<br>Esta acción no se puede deshacer.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: '<i class="fas fa-trash-alt"></i> Sí, eliminar',
-            cancelButtonText: '<i class="fas fa-times"></i> Cancelar',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('form-delete-' + id).submit();
-            }
-        });
-    }
-
-    @if (Session::has('mensaje'))
-        Swal.fire({
-            icon: "{{ Session::get('icono') }}",
-            title: "{{ Session::get('mensaje') }}",
-            showConfirmButton: false,
-            timer: 4000
-        });
-    @endif
-</script>
+    @include('admin.partials.crud-alerts')
 @stop

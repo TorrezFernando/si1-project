@@ -35,9 +35,9 @@ class PersonalAdministrativoController extends Controller
             })
             ->orderBy('ap_paterno')
             ->orderBy('nombre')
-            ->get();
+            ->paginate(15)
+            ->appends(['search' => $search]);
 
-        // CU24: Envia listado y texto de busqueda a la vista.
         return view('admin.personal_administrativo.index', compact('personal', 'search'));
     }
 

@@ -36,7 +36,7 @@ class MatriculaController extends Controller
             ->when($idGestion, fn ($query) => $query->where('icg.id_gestion', $idGestion))
             ->when($idCurso, fn ($query) => $query->where('icg.id_curso', $idCurso))
             ->when($estado, fn ($query) => $query->where('m.estado', $estado))
-            ->get();
+            ->paginate(15)->appends($request->except('page'));
 
         return view('admin.matriculas.index', array_merge($this->catalogos(), compact(
             'matriculas',

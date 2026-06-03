@@ -30,7 +30,7 @@ class InfraestructuraController extends Controller
             })
             ->when(in_array($estado, self::ESTADOS, true), fn ($query) => $query->where('estado', $estado))
             ->orderBy('nombre')
-            ->get();
+            ->paginate(15)->appends($request->except('page'));
 
         $estados = self::ESTADOS;
 

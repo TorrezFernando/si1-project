@@ -25,7 +25,7 @@ class FuncionalidadController extends Controller
                     ->orWhereHas('modulo', fn ($q) => $q->where('nombre', 'like', "%{$search}%"));
             })
             ->orderBy('nombre')
-            ->get();
+            ->paginate(15)->appends(['search' => $search]);
 
         return view('admin.funcionalidades.index', compact('funcionalidades', 'search'));
     }

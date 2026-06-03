@@ -35,7 +35,7 @@ class NotaController extends Controller
             ->when($idMateria, fn ($query) => $query->where('n.id_materia', $idMateria))
             ->when($idTrimestre, fn ($query) => $query->where('n.id_trimestre', $idTrimestre));
 
-        $notas = $query->get();
+        $notas = $query->paginate(15)->appends($request->except('page'));
         $filtros = $this->catalogos();
 
         return view('admin.notas.index', array_merge($filtros, compact(

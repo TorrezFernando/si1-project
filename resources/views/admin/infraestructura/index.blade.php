@@ -3,136 +3,124 @@
 @section('title', 'Infraestructura')
 
 @section('content_header')
-    <h1><b>Gestionar Infraestructura</b></h1>
-    <hr>
+    <h1>Infraestructura</h1>
 @stop
 
 @section('content')
-    <div class="card card-outline card-primary">
-        <div class="card-header">
-            <h3 class="card-title">CU20: Recursos f&iacute;sicos del colegio</h3>
-            <a href="{{ route('admin.infraestructura.create') }}" class="btn btn-primary btn-sm float-right">
-                <i class="fas fa-plus"></i> Nuevo Ambiente
+    <div class="list-header">
+        <div class="list-info">
+            <h4>{{ $aulas->total() }} {{ $aulas->total() == 1 ? 'ambiente' : 'ambientes' }}</h4>
+            <p>Gestion de aulas y recursos fisicos del colegio</p>
+        </div>
+        <div class="list-toolbar">
+            <a href="{{ route('admin.infraestructura.create') }}" class="btn-add">
+                <i class="fas fa-plus mr-1"></i> Nuevo Ambiente
             </a>
         </div>
-        <div class="card-body">
-            <form action="{{ route('admin.infraestructura.index') }}" method="GET" class="mb-3">
-                <div class="row">
-                    <div class="col-md-5">
-                        <div class="form-group">
-                            <label>Buscar</label>
-                            <input type="text" name="search" class="form-control" placeholder="Nombre, capacidad, ubicacion o tipo..." value="{{ $search ?? '' }}">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Estado</label>
-                            <select name="estado" class="form-control">
-                                <option value="">Todos</option>
-                                @foreach($estados as $opcion)
-                                    <option value="{{ $opcion }}" {{ ($estado ?? '') === $opcion ? 'selected' : '' }}>{{ $opcion }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-info">
-                                <i class="fas fa-search"></i> Buscar
-                            </button>
-                            <a href="{{ route('admin.infraestructura.index') }}" class="btn btn-secondary">
-                                <i class="fas fa-list"></i> Mostrar todo
-                            </a>
-                        </div>
-                    </div>
+    </div>
+
+    <div class="card" style="overflow: hidden;">
+        <div class="card-header" style="border-bottom: 1px solid #e2e8f0;">
+            <form action="{{ route('admin.infraestructura.index') }}" method="GET" class="row align-items-end" style="row-gap: 0.5rem;">
+                <div class="col-md-5">
+                    <input type="text" name="search" class="form-control" placeholder="Nombre, capacidad, ubicacion o tipo..." value="{{ $search ?? '' }}" style="border-radius: 8px;">
+                </div>
+                <div class="col-md-3">
+                    <select name="estado" class="form-control" style="border-radius: 8px;">
+                        <option value="">Todos los estados</option>
+                        @foreach($estados as $opcion)
+                            <option value="{{ $opcion }}" {{ ($estado ?? '') === $opcion ? 'selected' : '' }}>{{ $opcion }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-search mr-1"></i> Buscar</button>
+                    <a href="{{ route('admin.infraestructura.index') }}" class="btn btn-sm btn-secondary"><i class="fas fa-list mr-1"></i> Todo</a>
                 </div>
             </form>
-
+        </div>
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover table-sm">
+                <table class="data-table">
                     <thead>
                         <tr>
-                            <th style="width: 70px;" class="text-center">ID</th>
+                            <th style="width: 60px;">ID</th>
                             <th>Nombre</th>
                             <th>Tipo</th>
-                            <th class="text-center">Capacidad</th>
-                            <th>Ubicaci&oacute;n</th>
-                            <th class="text-center">Estado</th>
-                            <th class="text-center">Horarios</th>
-                            <th style="width: 180px;" class="text-center">Acciones</th>
+                            <th style="width: 80px;">Capacidad</th>
+                            <th>Ubicacion</th>
+                            <th style="width: 90px;">Estado</th>
+                            <th style="width: 70px;">Horarios</th>
+                            <th style="width: 100px;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($aulas as $aula)
-                            <tr>
-                                <td class="text-center">{{ $aula->id_aula }}</td>
-                                <td>{{ $aula->nombre }}</td>
-                                <td>{{ $aula->tipo }}</td>
-                                <td class="text-center">{{ $aula->capacidad }}</td>
-                                <td>{{ $aula->ubicacion }}</td>
-                                <td class="text-center">
-                                    @php
-                                        $badge = match($aula->estado) {
-                                            'Activo' => 'success',
-                                            'Mantenimiento' => 'warning',
-                                            default => 'secondary',
-                                        };
-                                    @endphp
-                                    <span class="badge badge-{{ $badge }}">{{ $aula->estado }}</span>
-                                </td>
-                                <td class="text-center">{{ $aula->horarios_asignados }}</td>
-                                <td class="text-center text-nowrap">
-                                    <a href="{{ route('admin.infraestructura.edit', $aula->id_aula) }}" class="btn btn-success btn-sm" title="Editar ambiente">
-                                        <i class="fas fa-pencil-alt"></i> Editar
+                        @php
+                            $estadoBadge = match($aula->estado) {
+                                'Activo' => 'on',
+                                'Mantenimiento' => 'off',
+                                default => 'off',
+                            };
+                        @endphp
+                        <tr>
+                            <td><span class="badge-chip">{{ $aula->id_aula }}</span></td>
+                            <td><span style="font-weight: 600; color: #1e293b;">{{ $aula->nombre }}</span></td>
+                            <td>{{ $aula->tipo }}</td>
+                            <td class="text-center">{{ $aula->capacidad }}</td>
+                            <td style="font-size: 0.85rem;">{{ $aula->ubicacion }}</td>
+                            <td>
+                                <span class="status-badge {{ $estadoBadge }}">
+                                    <span class="status-dot"></span>
+                                    {{ $aula->estado }}
+                                </span>
+                            </td>
+                            <td class="text-center">{{ $aula->horarios_asignados }}</td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{{ route('admin.infraestructura.edit', $aula->id_aula) }}"
+                                       class="btn-icon btn-icon-edit" title="Editar">
+                                        <i class="fas fa-pen"></i>
                                     </a>
-                                    <form action="{{ route('admin.infraestructura.destroy', $aula->id_aula) }}" method="POST" id="form-delete-{{ $aula->id_aula }}" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="btn btn-danger btn-sm" title="Eliminar ambiente" onclick="confirmarEliminar({{ $aula->id_aula }}, '{{ addslashes($aula->nombre) }}')">
-                                            <i class="fas fa-trash-alt"></i> Eliminar
+                                    <form action="{{ route('admin.infraestructura.destroy', $aula->id_aula) }}"
+                                          method="POST" class="form-delete" style="display:inline;">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn-icon btn-icon-delete" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
-                                </td>
-                            </tr>
+                                </div>
+                            </td>
+                        </tr>
                         @empty
-                            <tr>
-                                <td colspan="8" class="text-center">No se encontraron recursos de infraestructura.</td>
-                            </tr>
+                        <tr>
+                            <td colspan="8">
+                                <div class="empty-state">
+                                    <div class="empty-icon">🏫</div>
+                                    <h5>Sin ambientes</h5>
+                                    <p>No se encontraron recursos de infraestructura.</p>
+                                </div>
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
+
+        @if($aulas->hasPages())
+        <div class="card-footer list-card-footer">
+            <div class="list-pagination-bar">
+                <small class="pagination-summary">
+                    Mostrando {{ $aulas->firstItem() }}-{{ $aulas->lastItem() }} de {{ $aulas->total() }}
+                </small>
+                {{ $aulas->links('admin.partials.list-pagination') }}
+            </div>
+        </div>
+        @endif
     </div>
 @stop
 
 @section('js')
-<script>
-    function confirmarEliminar(id, nombre) {
-        Swal.fire({
-            title: 'Estas seguro?',
-            html: `Se eliminara el ambiente <strong>${nombre}</strong>.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: '<i class="fas fa-trash-alt"></i> Si, eliminar',
-            cancelButtonText: '<i class="fas fa-times"></i> Cancelar',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('form-delete-' + id).submit();
-            }
-        });
-    }
-
-    @if (Session::has('mensaje'))
-        Swal.fire({
-            icon: "{{ Session::get('icono') }}",
-            title: "{{ Session::get('mensaje') }}",
-            showConfirmButton: false,
-            timer: 3500
-        });
-    @endif
-</script>
+    @include('admin.partials.crud-alerts')
 @stop

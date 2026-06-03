@@ -33,10 +33,10 @@ class ProfesorController extends Controller
             ->orderBy('ap_paterno')
             ->orderBy('ap_materno')
             ->orderBy('nombre')
-            ->get();
+            ->paginate(15);
 
         // CU02: Calcula total para validar capacidad maxima.
-        $totalProfesores = $profesores->count();
+        $totalProfesores = Profesor::count();
 
         // CU02: Muestra la vista de listado de docentes.
         return view('admin.profesores.index', compact('profesores', 'totalProfesores'));

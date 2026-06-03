@@ -35,7 +35,7 @@ class GestionController extends Controller
                 }
             })
             ->orderByDesc('nombre')
-            ->get();
+            ->paginate(15)->appends(['search' => $search]);
 
         // CU22: Envia gestiones filtradas a la vista administrativa.
         return view('admin.gestiones.index', compact('gestiones', 'search'));

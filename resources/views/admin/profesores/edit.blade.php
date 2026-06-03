@@ -3,8 +3,7 @@
 @section('title', 'Editar Acceso - Profesor')
 
 @section('content_header')
-    <h1><b>Configuracion de acceso del profesor</b></h1>
-    <hr>
+    <h1>Configuracion de acceso del profesor</h1>
 @stop
 
 @section('content')

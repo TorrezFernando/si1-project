@@ -58,7 +58,7 @@ class CursoController extends Controller
         }
 
         // CU12: Ejecuta la consulta final ordenada para el listado.
-        $cursos = $query->orderBy('nombre', 'asc')->get();
+        $cursos = $query->orderBy('nombre', 'asc')->paginate(15)->appends($request->except('page'));
 
         // CU12: Catalogos usados por los filtros del listado.
         $all_cursos = Curso::all();

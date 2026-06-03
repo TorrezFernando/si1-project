@@ -29,7 +29,7 @@ class MateriaController extends Controller
         }
 
         // CU13: Ejecuta la consulta ordenada alfabeticamente.
-        $materias = $query->orderBy('nombre', 'asc')->get();
+        $materias = $query->orderBy('nombre', 'asc')->paginate(15)->appends(['search' => $search]);
 
         return view('admin.materias.index', compact('materias', 'search'));
     }

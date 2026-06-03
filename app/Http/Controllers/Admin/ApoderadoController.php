@@ -45,7 +45,8 @@ class ApoderadoController extends Controller
             ->orderBy('ap_paterno')
             ->orderBy('ap_materno')
             ->orderBy('nombres')
-            ->get();
+            ->paginate(15)
+            ->appends(['search' => $search]);
 
         // CU04: Entrega el listado filtrado a la vista administrativa.
         return view('admin.apoderados.index', compact('apoderados', 'search'));

@@ -7,9 +7,14 @@
     @stack('css')
     @yield('css')
 
+    {{-- Global dashboard styles --}}
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style type="text/css">
+    body { font-family: 'Inter', sans-serif; }
     .zoomP{
-        /* Aumentamos la anchura y altura durante 2 segundos */
         transition: width 1.1s, height 1.1s, transform 1.1s;
         -moz-transition: width 1.1s, height 1.1s, -moz-transform 1.1s;
         -webkit-transition: width 1.1s, height 1.1s, -webkit-transform 1.1s;
@@ -18,10 +23,7 @@
         box-shadow: #c0c0c0 0px 5px 5px 0px;
     }
     .zoomP:hover{
-        /* transformamos el elemento al pasar el mouse por encima al doble de su tamaño con scale(2). */
-
-        transform: scale(1.05); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
-
+        transform: scale(1.05);
         -webkit-transform:scale(1.05);transform:scale(1.05);
     }
 </style>
@@ -74,7 +76,10 @@
 @section('adminlte_js')
     @stack('js')
     @yield('js')
-    @yield('js')
+
+    {{-- Global dashboard scripts --}}
+    <script src="{{ asset('js/dashboard.js') }}"></script>
+
 @if( (($mensaje = Session::get('mensaje')) && ($icono = Session::get('icono'))) )
     <script>
         Swal.fire({

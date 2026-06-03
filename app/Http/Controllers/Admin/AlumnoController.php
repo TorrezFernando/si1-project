@@ -25,7 +25,7 @@ class AlumnoController extends Controller
             ->orderBy('ap_paterno')
             ->orderBy('ap_materno')
             ->orderBy('nombres')
-            ->get();
+            ->paginate(15);
 
         // CU03: Muestra la vista de listado de estudiantes.
         return view('admin.alumnos.index', compact('alumnos'));

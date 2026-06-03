@@ -22,7 +22,7 @@ class ModuloController extends Controller
                     ->orWhere('descripcion', 'like', "%{$search}%");
             })
             ->orderBy('nombre')
-            ->get();
+            ->paginate(15)->appends(['search' => $search]);
 
         return view('admin.modulos.index', compact('modulos', 'search'));
     }

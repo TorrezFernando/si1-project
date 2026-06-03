@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -40,8 +41,18 @@ class PagoController extends Controller
         $totalPendiente = $pagos->where('estado_pago', 'Pendiente')->sum('monto_pendiente');
         $totalPagado = $pagos->where('estado_pago', 'Pagado')->sum('monto_pagado');
 
+        $page = (int) $request->input('page', 1);
+        $perPage = 15;
+        $paginator = new LengthAwarePaginator(
+            $pagos->forPage($page, $perPage),
+            $pagos->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
         return view('admin.pagos.index', compact(
-            'pagos',
+            'paginator',
             'search',
             'tipo',
             'estado',

@@ -35,10 +35,8 @@ class MensualidadController extends Controller
         $mes = $request->input('mes');
         $estado = $request->input('estado');
 
-        $mensualidades = $this->consultaBase()
-            ->when($search, function ($query) use ($search) {
-                $like = '%' . $search . '%';
-
+        $totalPendiente = $this->consultaBase()
+            ->when($search, function ($query) use ($search) { $like = '%' . $search . '%';
                 $query->where(function ($q) use ($like) {
                     $q->whereRaw("LOWER(CONCAT_WS(' ', a.nombres, a.ap_paterno, a.ap_materno)) LIKE LOWER(?)", [$like])
                         ->orWhereRaw('LOWER(a.ci) LIKE LOWER(?)', [$like])
@@ -51,11 +49,28 @@ class MensualidadController extends Controller
             ->when($idCurso, fn ($query) => $query->where('pm.id_curso', $idCurso))
             ->when($mes, fn ($query) => $query->where('pm.mes', $mes))
             ->when($estado, fn ($query) => $query->where($this->columnaEstado(), $estado))
-            ->get();
+            ->where(function ($q) {
+                $q->where('pm.estado', 'Pendiente')->orWhere('pm.estado', 'Vencido');
+            })
+            ->sum(DB::raw('COALESCE(pm.saldo, pm.monto)'));
 
-        $totalPendiente = $mensualidades
-            ->whereIn('estado', ['Pendiente', 'Vencido'])
-            ->sum(fn ($item) => (float) $item->saldo);
+        $mensualidades = $this->consultaBase()
+            ->when($search, function ($query) use ($search) {
+                $like = '%' . $search . '%';
+                $query->where(function ($q) use ($like) {
+                    $q->whereRaw("LOWER(CONCAT_WS(' ', a.nombres, a.ap_paterno, a.ap_materno)) LIKE LOWER(?)", [$like])
+                        ->orWhereRaw('LOWER(a.ci) LIKE LOWER(?)', [$like])
+                        ->orWhereRaw('LOWER(c.nombre) LIKE LOWER(?)', [$like])
+                        ->orWhereRaw('LOWER(g.nombre) LIKE LOWER(?)', [$like])
+                        ->orWhereRaw('LOWER(pm.mes) LIKE LOWER(?)', [$like]);
+                });
+            })
+            ->when($idGestion, fn ($query) => $query->where('pm.id_gestion', $idGestion))
+            ->when($idCurso, fn ($query) => $query->where('pm.id_curso', $idCurso))
+            ->when($mes, fn ($query) => $query->where('pm.mes', $mes))
+            ->when($estado, fn ($query) => $query->where($this->columnaEstado(), $estado))
+            ->paginate(15)
+            ->appends($request->except('page'));
 
         return view('admin.mensualidades.index', array_merge($this->catalogos(), compact(
             'mensualidades',
