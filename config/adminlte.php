@@ -326,6 +326,12 @@ return [
                     'can' => 'admin.administradores.index'
                 ], */
                 [
+                    'text' => 'Usuarios del Sistema',
+                    'url' => 'admin/usuarios',
+                    'icon' => 'fas fa-fw fa-users-cog',
+                    'can' => 'admin.usuarios.index'
+                ],
+                [
                     'text' => 'Personal Administrativo',
                     'url' => 'admin/personal-administrativo',
                     'icon' => 'fas fa-fw fa-user-cog',

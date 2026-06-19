@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\PagoController;
 use App\Http\Controllers\Admin\PersonalAdministrativoController;
 use App\Http\Controllers\Admin\PerfilController;
 use App\Http\Controllers\Admin\PermisoRolController;
+use App\Http\Controllers\Admin\UsuarioController;
 
 // CU06: Iniciar sesion - registra las rutas base de login de Laravel.
 Auth::routes(['register' => false]);
@@ -118,6 +119,12 @@ Route::resource('/admin/personal-administrativo', PersonalAdministrativoControll
     ->except(['show'])
     ->parameters(['personal-administrativo' => 'personalAdministrativo'])
     ->middleware(['auth', 'can:admin.personal-administrativo.index']);
+
+// CU01: Gestionar Usuario - CRUD de credenciales de acceso del sistema.
+Route::resource('/admin/usuarios', UsuarioController::class, ['as' => 'admin'])
+    ->except(['show'])
+    ->parameters(['usuarios' => 'usuario'])
+    ->middleware(['auth', 'can:admin.usuarios.index']);
 
 // CU04: Gestionar Tutor - CRUD de apoderados y vinculacion con estudiantes.
 Route::resource('/admin/apoderados', ApoderadoController::class, ['as' => 'admin'])
