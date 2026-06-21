@@ -20,6 +20,39 @@
     </div>
 
     <div class="card" style="overflow: hidden;">
+        <div class="card-header" style="border-bottom: 1px solid #e2e8f0;">
+            <form action="{{ route('admin.alumnos.index') }}" method="GET" class="row align-items-end" style="row-gap: 0.5rem;">
+                <div class="col-md-3">
+                    <input type="text" name="search" class="form-control" placeholder="Nombre, apellido o CI..." value="{{ $search ?? '' }}" style="border-radius: 8px;">
+                </div>
+                <div class="col-md-2">
+                    <select name="id_curso" class="form-control" style="border-radius: 8px;">
+                        <option value="">Todos los cursos</option>
+                        @foreach($cursos as $curso)
+                            <option value="{{ $curso->id_curso }}" {{ (int) $idCurso === (int) $curso->id_curso ? 'selected' : '' }}>{{ $curso->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="id_materia" class="form-control" style="border-radius: 8px;">
+                        <option value="">Todas las materias</option>
+                        @foreach($materias as $materia)
+                            <option value="{{ $materia->id_materia }}" {{ (int) $idMateria === (int) $materia->id_materia ? 'selected' : '' }}>{{ $materia->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-check" style="padding-top: 8px;">
+                        <input type="checkbox" name="becados" value="1" id="becados" class="form-check-input" {{ $becados ? 'checked' : '' }}>
+                        <label class="form-check-label" for="becados">Solo becados</label>
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-search mr-1"></i> Buscar</button>
+                    <a href="{{ route('admin.alumnos.index') }}" class="btn btn-sm btn-secondary"><i class="fas fa-list mr-1"></i> Limpiar</a>
+                </div>
+            </form>
+        </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="data-table">
@@ -32,6 +65,7 @@
                             <th>Fecha Nac.</th>
                             <th>Telefono</th>
                             <th>Usuario</th>
+                            <th style="width: 100px;">Beca</th>
                             <th style="width: 100px;">Acciones</th>
                         </tr>
                     </thead>
@@ -55,11 +89,18 @@
                             <td>{{ $alumno->ci }}</td>
                             <td><span class="badge-chip">{{ $alumno->genero === 'F' ? 'Femenino' : 'Masculino' }}</span></td>
                             <td style="font-size: 0.85rem;">{{ $alumno->fecha_nac }}</td>
-                            <td style="font-size: 0.85rem;">{{ $alumno->telefono ?: '—' }}</td>
+                            <td style="font-size: 0.85rem;">{{ $alumno->telefono ?: '&mdash;' }}</td>
                             <td>
                                 <span style="font-weight: 600; color: #1e293b;">
                                     {{ optional($alumno->usuario)->username ?? 'Sin usuario' }}
                                 </span>
+                            </td>
+                            <td class="text-center">
+                                @if($alumno->beca)
+                                    <span class="badge badge-success">{{ $alumno->beca->nombre }}</span>
+                                @else
+                                    <span class="text-muted">&mdash;</span>
+                                @endif
                             </td>
                             <td>
                                 <div class="action-btns">
@@ -79,7 +120,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8">
+                            <td colspan="9">
                                 <div class="empty-state">
                                     <div class="empty-icon">👨‍🎓</div>
                                     <h5>Sin alumnos</h5>

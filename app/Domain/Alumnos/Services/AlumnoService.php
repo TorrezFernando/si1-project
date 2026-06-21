@@ -32,6 +32,7 @@ class AlumnoService
                 'genero' => $data['genero'],
                 'fecha_nac' => $data['fecha_nac'],
                 'telefono' => $data['telefono'],
+                'id_beca' => $data['id_beca'] ?? null,
             ]);
         });
     }
@@ -76,6 +77,7 @@ class AlumnoService
             $alumno->genero = $data['genero'];
             $alumno->fecha_nac = $data['fecha_nac'];
             $alumno->telefono = $data['telefono'];
+            $alumno->id_beca = $data['id_beca'] ?? null;
             // CU03: Guarda cambios del estudiante.
             $alumno->save();
         });

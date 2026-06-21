@@ -101,10 +101,26 @@
                             @enderror
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Beca asignada</label>
+                            <select name="id_beca" class="form-control">
+                                <option value="">Sin beca</option>
+                                @foreach($becas as $beca)
+                                    <option value="{{ $beca->id_beca }}" {{ old('id_beca', $alumno->id_beca) == $beca->id_beca ? 'selected' : '' }}>
+                                        {{ $beca->nombre }} ({{ $beca->porcentaje }}%)
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('id_beca')
+                                <small style="color: red">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
 
                 <hr>
-                <h5>Datos personales de acceso</h5>
+                <h5>Datos de acceso</h5>
                 {{-- Datos de acceso: vienen de la relacion $alumno->usuario y se actualizan junto al alumno. --}}
                 <div class="row">
                     <div class="col-md-6">

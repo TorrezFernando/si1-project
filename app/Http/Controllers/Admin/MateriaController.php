@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Materia;
 use App\Models\CampoSaberes;
+use App\Models\EstructuraNota;
+use App\Models\Materia;
 use Illuminate\Http\Request;
 
 // CU13: Controlador para gestionar materias y su campo de saberes.
@@ -59,15 +60,32 @@ class MateriaController extends Controller
         ]);
 
         // CU13: Registra la materia con sus datos academicos.
-        Materia::create([
+        $materia = Materia::create([
             'nombre' => $request->nombre,
             'carga_horaria' => $request->carga_horaria,
             'distintivo' => $request->distintivo,
             'id_campo' => $request->id_campo,
         ]);
 
+        // CU13: Crea automaticamente la estructura de evaluacion SER/SABER/HACER/AUTOEVALUACION.
+        $componentes = [
+            ['componente' => 'SER', 'porcentaje' => 25.00],
+            ['componente' => 'SABER', 'porcentaje' => 25.00],
+            ['componente' => 'HACER', 'porcentaje' => 25.00],
+            ['componente' => 'AUTOEVALUACION', 'porcentaje' => 25.00],
+        ];
+
+        foreach ($componentes as $comp) {
+            EstructuraNota::create([
+                'id_materia' => $materia->id_materia,
+                'componente' => $comp['componente'],
+                'porcentaje' => $comp['porcentaje'],
+                'activo' => true,
+            ]);
+        }
+
         return redirect()->route('admin.materias.index')
-            ->with('mensaje', 'Materia creada con éxito')
+            ->with('mensaje', 'Materia creada con éxito. Estructura de evaluacion asignada.')
             ->with('icono', 'success');
     }
 

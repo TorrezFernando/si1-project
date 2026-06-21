@@ -391,6 +391,13 @@ return [
                     'can' => 'admin.notas.index'
                 ],
                 [
+                    'text' => 'Asistencias',
+                    'url' => 'admin/asistencias',
+                    'icon' => 'fas fa-fw fa-calendar-check',
+                    'icon_color' => 'info',
+                    'can' => 'admin.asistencias.index'
+                ],
+                [
                     'text' => 'Fichas Medicas',
                     'url' => 'admin/fichas-medicas',
                     'icon' => 'fas fa-fw fa-notes-medical',
@@ -453,6 +460,13 @@ return [
                     'icon' => 'fas fa-fw fa-file-invoice-dollar',
                     'icon_color' => 'success',
                     'can' => 'admin.mensualidades.index'
+                ],
+                [
+                    'text' => 'Becas',
+                    'url' => 'admin/becas',
+                    'icon' => 'fas fa-fw fa-award',
+                    'icon_color' => 'success',
+                    'can' => 'admin.becas.index'
                 ],
                 [
                     'text' => 'Reportes Financieros',

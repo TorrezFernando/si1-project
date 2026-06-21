@@ -34,4 +34,10 @@ class Materia extends Model
         return $this->belongsToMany(Curso::class, 'materia_curso_gestion', 'id_materia', 'id_curso')
             ->withPivot('id_gestion', 'id_profesor');
     }
+
+    // CU13: Estructura de evaluacion de la materia (SER/SABER/HACER/AUTOEVALUACION).
+    public function estructuraNotas()
+    {
+        return $this->hasMany(EstructuraNota::class, 'id_materia', 'id_materia');
+    }
 }

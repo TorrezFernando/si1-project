@@ -103,10 +103,29 @@ class MensualidadController extends Controller
         $matricula = $this->buscarMatriculaActiva((int) $data['id_inscripcion']);
         $this->validarGestionActiva((int) $matricula->id_gestion);
 
+        $idBeca = $data['id_beca'] ?? null;
+        if ($idBeca && ! auth()->user()->isAdmin()) {
+            $beca = DB::table('beca')->where('id_beca', $idBeca)->first();
+            if ($beca && $beca->admin_only) {
+                throw ValidationException::withMessages([
+                    'id_beca' => 'No tiene permisos para asignar esta beca.',
+                ]);
+            }
+        }
+        if (empty($idBeca)) {
+            $idBeca = $this->autoAsignarBeca((int) $matricula->id_alumno, (int) $matricula->id_gestion, (int) $matricula->id_curso);
+        }
+
         $descuento = (float) ($data['descuento'] ?? 0);
+        if ($descuento == 0 && ! empty($idBeca)) {
+            $beca = DB::table('beca')->where('id_beca', $idBeca)->first();
+            if ($beca && $beca->activo) {
+                $descuento = round((float) $data['monto'] * ((float) $beca->porcentaje / 100), 2);
+            }
+        }
         $montoFinal = max(0, (float) $data['monto'] - $descuento);
 
-        DB::transaction(function () use ($data, $matricula, $descuento, $montoFinal) {
+        DB::transaction(function () use ($data, $matricula, $descuento, $montoFinal, $idBeca) {
             foreach (self::MESES as $mes) {
                 $existe = DB::table('pago_mensual')
                     ->where('id_alumno', $matricula->id_alumno)
@@ -127,7 +146,7 @@ class MensualidadController extends Controller
                     'id_gestion' => $matricula->id_gestion,
                     'id_curso' => $matricula->id_curso,
                     'id_alumno' => $matricula->id_alumno,
-                    'id_beca' => $data['id_beca'] ?? null,
+                    'id_beca' => $idBeca,
                 ];
 
                 if (Schema::hasColumn('pago_mensual', 'estado')) {
@@ -224,11 +243,17 @@ class MensualidadController extends Controller
 
     private function catalogos(): array
     {
+        $becasQuery = DB::table('beca')->where('activo', true);
+
+        if (! auth()->user()?->isAdmin()) {
+            $becasQuery->where('admin_only', false);
+        }
+
         return [
             'matriculasActivas' => $this->matriculasActivas(),
             'gestiones' => DB::table('gestion')->orderByDesc('id_gestion')->get(),
             'cursos' => DB::table('curso')->orderBy('nombre')->get(),
-            'becas' => DB::table('beca')->orderBy('descripcion')->get(),
+            'becas' => $becasQuery->orderBy('nombre')->get(),
             'meses' => self::MESES,
             'estados' => self::ESTADOS,
         ];
@@ -287,6 +312,65 @@ class MensualidadController extends Controller
                 'id_inscripcion' => 'No se pueden generar mensualidades. El anio lectivo no esta activo.',
             ]);
         }
+    }
+
+    private function autoAsignarBeca(int $idAlumno, int $idGestion, int $idCurso): ?int
+    {
+        $becaExcelenciaId = (int) DB::table('beca')->where('nombre', 'Excelencia')->value('id_beca');
+        if ($becaExcelenciaId) {
+            $mejorAlumno = DB::selectOne("
+                SELECT id_alumno, AVG(promediofinal) as promedio
+                FROM nota
+                WHERE id_gestion = ? AND id_curso = ?
+                GROUP BY id_alumno
+                ORDER BY promedio DESC
+                LIMIT 1
+            ", [$idGestion, $idCurso]);
+
+            if ($mejorAlumno && (int) $mejorAlumno->id_alumno === $idAlumno) {
+                return $becaExcelenciaId;
+            }
+        }
+
+        $becaHermanosId = (int) DB::table('beca')->where('nombre', 'Hermanos')->value('id_beca');
+        if ($becaHermanosId) {
+            $totalHermanos = DB::selectOne("
+                SELECT COUNT(DISTINCT p2.id_alumno) as total
+                FROM parentesco p1
+                INNER JOIN parentesco p2 ON p1.id_apoderado = p2.id_apoderado
+                INNER JOIN alumno a1 ON a1.id_alumno = p1.id_alumno
+                INNER JOIN alumno a2 ON a2.id_alumno = p2.id_alumno
+                WHERE p1.id_alumno = ?
+                AND a2.ap_paterno = a1.ap_paterno
+                AND a2.ap_materno = a1.ap_materno
+            ", [$idAlumno]);
+
+            if ($totalHermanos && (int) $totalHermanos->total >= 3) {
+                $hermanoMenor = DB::selectOne("
+                    SELECT a2.id_alumno
+                    FROM parentesco p1
+                    INNER JOIN parentesco p2 ON p1.id_apoderado = p2.id_apoderado
+                    INNER JOIN alumno a1 ON a1.id_alumno = p1.id_alumno
+                    INNER JOIN alumno a2 ON a2.id_alumno = p2.id_alumno
+                    WHERE p1.id_alumno = ?
+                    AND a2.ap_paterno = a1.ap_paterno
+                    AND a2.ap_materno = a1.ap_materno
+                    ORDER BY a2.fecha_nac DESC
+                    LIMIT 1
+                ", [$idAlumno]);
+
+                if ($hermanoMenor && (int) $hermanoMenor->id_alumno === $idAlumno) {
+                    return $becaHermanosId;
+                }
+            }
+        }
+
+        $alumno = DB::table('alumno')->find($idAlumno);
+        if ($alumno && ! empty($alumno->id_beca)) {
+            return (int) $alumno->id_beca;
+        }
+
+        return null;
     }
 
     private function fechaVencimiento(int $idGestion, string $mes): string

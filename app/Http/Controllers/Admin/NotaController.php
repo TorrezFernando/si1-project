@@ -88,7 +88,7 @@ class NotaController extends Controller
             'saber' => $data['saber'],
             'hacer' => $data['hacer'],
             'autoevaluacion' => $data['autoevaluacion'],
-            'promediofinal' => $this->calcularPromedio($data),
+            'promediofinal' => $this->calcularPromedio($data, $idMateria),
             'descripcion' => $data['descripcion'] ?? '',
         ]);
 
@@ -121,7 +121,7 @@ class NotaController extends Controller
                 'saber' => $data['saber'],
                 'hacer' => $data['hacer'],
                 'autoevaluacion' => $data['autoevaluacion'],
-                'promediofinal' => $this->calcularPromedio($data),
+                'promediofinal' => $this->calcularPromedio($data, $idMateria),
                 'descripcion' => $data['descripcion'] ?? '',
             ]);
 
@@ -313,9 +313,36 @@ class NotaController extends Controller
         return array_map('intval', explode('|', $asignacion));
     }
 
-    private function calcularPromedio(array $data): float
+    private function calcularPromedio(array $data, ?int $idMateria = null): float
     {
-        return round(((int) $data['ser'] + (int) $data['saber'] + (int) $data['hacer'] + (int) $data['autoevaluacion']) / 4, 2);
+        $componentes = ['SER', 'SABER', 'HACER', 'AUTOEVALUACION'];
+        $map = ['ser' => 'SER', 'saber' => 'SABER', 'hacer' => 'HACER', 'autoevaluacion' => 'AUTOEVALUACION'];
+
+        if ($idMateria) {
+            $pesos = DB::table('estructura_nota')
+                ->where('id_materia', $idMateria)
+                ->where('activo', true)
+                ->pluck('porcentaje', 'componente')
+                ->toArray();
+        } else {
+            $pesos = [];
+        }
+
+        $sumaPonderada = 0;
+        $sumaPesos = 0;
+
+        foreach ($map as $key => $componente) {
+            $valor = (int) ($data[$key] ?? 0);
+            $peso = isset($pesos[$componente]) ? (float) $pesos[$componente] : 25.0;
+            $sumaPonderada += $valor * ($peso / 100);
+            $sumaPesos += $peso;
+        }
+
+        if ($sumaPesos <= 0) {
+            return 0;
+        }
+
+        return round($sumaPonderada / ($sumaPesos / 100), 2);
     }
 
     private function esProfesor(Request $request): bool

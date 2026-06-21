@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\PersonalAdministrativoController;
 use App\Http\Controllers\Admin\PerfilController;
 use App\Http\Controllers\Admin\PermisoRolController;
 use App\Http\Controllers\Admin\UsuarioController;
+use App\Http\Controllers\Admin\AsistenciaController;
+use App\Http\Controllers\Admin\BecaController;
 use App\Http\Controllers\Admin\ChatIaController;
 
 
@@ -187,6 +189,20 @@ Route::resource('/admin/fichas-medicas', FichaMedicaController::class, ['as' => 
 Route::resource('/admin/infraestructura', InfraestructuraController::class, ['as' => 'admin'])
     ->except(['show'])
     ->middleware(['auth', 'can:admin.infraestructura.index']);
+
+// CU19: Gestionar Beca - CRUD de tipos de beca.
+Route::resource('/admin/becas', BecaController::class, ['as' => 'admin'])
+    ->except(['show'])
+    ->middleware(['auth', 'can:admin.becas.index']);
+
+// CU16: Gestionar Asistencia - CRUD de asistencia por materia/curso/gestion.
+Route::get('/admin/asistencias', [AsistenciaController::class, 'index'])->name('admin.asistencias.index')->middleware(['auth', 'can:admin.asistencias.index']);
+Route::get('/admin/asistencias/create', [AsistenciaController::class, 'create'])->name('admin.asistencias.create')->middleware(['auth', 'can:admin.asistencias.index']);
+Route::post('/admin/asistencias', [AsistenciaController::class, 'store'])->name('admin.asistencias.store')->middleware(['auth', 'can:admin.asistencias.index']);
+Route::get('/admin/asistencias/alumnos', [AsistenciaController::class, 'alumnosPorAsignacion'])->name('admin.asistencias.alumnos')->middleware(['auth', 'can:admin.asistencias.index']);
+Route::get('/admin/asistencias/{idMateria}/{idGestion}/{idCurso}/{fecha}/edit', [AsistenciaController::class, 'edit'])->name('admin.asistencias.edit')->middleware(['auth', 'can:admin.asistencias.index']);
+Route::put('/admin/asistencias', [AsistenciaController::class, 'update'])->name('admin.asistencias.update')->middleware(['auth', 'can:admin.asistencias.index']);
+Route::delete('/admin/asistencias/{id}', [AsistenciaController::class, 'destroy'])->name('admin.asistencias.destroy')->middleware(['auth', 'can:admin.asistencias.index']);
 
 // CU14: Gestionar Horario - asignacion de dias, horas y aulas para clases.
 Route::get('/admin/horarios', [AdminHorarioController::class, 'index'])->name('admin.horarios.index')->middleware(['auth', 'can:admin.horarios.index']);

@@ -24,6 +24,7 @@ class Alumno extends Model
         'genero',
         'fecha_nac',
         'telefono',
+        'id_beca',
     ];
 
     // CU03 y CU01: Usuario vinculado al estudiante para iniciar sesion.
@@ -36,5 +37,10 @@ class Alumno extends Model
     public function fichaMedica()
     {
         return $this->hasOne(FichaMedica::class, 'id_alumno', 'id_alumno');
+    }
+
+    public function beca()
+    {
+        return $this->belongsTo(Beca::class, 'id_beca', 'id_beca');
     }
 }

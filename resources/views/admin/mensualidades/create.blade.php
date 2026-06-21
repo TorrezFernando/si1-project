@@ -51,11 +51,11 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label>Beca</label>
-                            <select name="id_beca" class="form-control">
+                            <select name="id_beca" id="id_beca" class="form-control">
                                 <option value="">Sin beca</option>
                                 @foreach($becas as $beca)
-                                    <option value="{{ $beca->id_beca }}" {{ (int) old('id_beca') === (int) $beca->id_beca ? 'selected' : '' }}>
-                                        {{ $beca->descripcion }}
+                                    <option value="{{ $beca->id_beca }}" data-porcentaje="{{ $beca->porcentaje }}" {{ (int) old('id_beca') === (int) $beca->id_beca ? 'selected' : '' }}>
+                                        {{ $beca->nombre }} ({{ $beca->porcentaje }}%)
                                     </option>
                                 @endforeach
                             </select>
@@ -85,5 +85,24 @@
             timer: 3500
         });
     @endif
+
+    document.getElementById('id_beca').addEventListener('change', function() {
+        const selected = this.options[this.selectedIndex];
+        const porcentaje = selected ? parseFloat(selected.dataset.porcentaje) || 0 : 0;
+        const monto = parseFloat(document.querySelector('input[name="monto"]').value) || 0;
+        const descuentoInput = document.querySelector('input[name="descuento"]');
+
+        if (porcentaje > 0 && monto > 0) {
+            const descuento = Math.round(monto * (porcentaje / 100) * 100) / 100;
+            descuentoInput.value = descuento.toFixed(2);
+        } else if (!this.value) {
+            descuentoInput.value = '0.00';
+        }
+    });
+
+    document.querySelector('input[name="monto"]').addEventListener('input', function() {
+        const event = new Event('change');
+        document.getElementById('id_beca').dispatchEvent(event);
+    });
 </script>
 @stop
