@@ -27,5 +27,7 @@ class DatabaseSeeder extends Seeder
                 'id_rol' => 1,
             ]
         );
+
+        $this->call(TestDataSeeder::class);
     }
 }

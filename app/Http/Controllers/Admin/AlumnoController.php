@@ -9,6 +9,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class AlumnoController extends Controller
 {
@@ -85,7 +86,7 @@ class AlumnoController extends Controller
             'fecha_nac' => ['required', 'date'],
             'telefono' => ['required', 'string', 'max:20'],
             'username' => ['required', 'string', 'max:50', 'unique:usuario,username'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'password' => ['required', 'string', 'confirmed', Password::defaults()],
             'id_beca' => ['nullable', 'integer', 'exists:beca,id_beca'],
         ]);
 
@@ -123,7 +124,7 @@ class AlumnoController extends Controller
                 'max:50',
                 Rule::unique('usuario', 'username')->ignore(optional($alumno->usuario)->id_user, 'id_user'),
             ],
-            'password' => ['nullable', 'string', 'min:6', 'confirmed'],
+            'password' => ['nullable', 'string', 'confirmed', Password::defaults()],
             'id_beca' => ['nullable', 'integer', 'exists:beca,id_beca'],
         ]);
 

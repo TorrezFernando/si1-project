@@ -70,6 +70,7 @@
             <div class="form-group">
                 <label>Contraseña <span class="text-danger">*</span></label>
                 <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
+                <small class="form-text text-muted">Minimo 8 caracteres, con mayusculas, minusculas, numeros y simbolos.</small>
                 @error('password') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
         </div>
@@ -94,6 +95,7 @@
             <div class="form-group">
                 <label>Nueva contraseña</label>
                 <input type="password" name="password" class="form-control @error('password') is-invalid @enderror">
+                <small class="form-text text-muted">Minimo 8 caracteres, con mayusculas, minusculas, numeros y simbolos.</small>
                 @error('password') <small class="text-danger">{{ $message }}</small> @enderror
                 <small class="text-muted">Dejar en blanco para mantener la actual</small>
             </div>

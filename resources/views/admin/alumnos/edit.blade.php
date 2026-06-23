@@ -138,6 +138,7 @@
                             <label>Nueva Contraseña</label>
                             {{-- Si se deja vacio, el servicio mantiene la contrasena actual. --}}
                             <input type="password" class="form-control" name="password">
+                            <small class="form-text text-muted">Minimo 8 caracteres, con mayusculas, minusculas, numeros y simbolos.</small>
                             <small class="text-muted">Deje este campo vacio si no desea cambiar la contraseña.</small>
                             @error('password')
                                 <small style="color: red">{{ $message }}</small>

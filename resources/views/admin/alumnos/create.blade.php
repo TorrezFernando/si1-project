@@ -137,6 +137,7 @@
                             <label>Contraseña</label><b> (*)</b>
                             {{-- password se envia al controlador y el servicio lo guarda cifrado. --}}
                             <input type="password" class="form-control" name="password" required>
+                            <small class="form-text text-muted">Minimo 8 caracteres, con mayusculas, minusculas, numeros y simbolos.</small>
                             @error('password')
                                 <small style="color: red">{{ $message }}</small>
                             @enderror

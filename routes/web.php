@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\AsistenciaController;
 use App\Http\Controllers\Admin\BecaController;
 use App\Http\Controllers\Admin\ChatIaController;
+use App\Http\Controllers\Admin\PagoPasarelaController;
 
 
 // CU06: Iniciar sesion - registra las rutas base de login de Laravel.
@@ -179,6 +180,10 @@ Route::post('/admin/pagos', [PagoController::class, 'store'])->name('admin.pagos
 Route::get('/admin/pagos/{tipo}/{referencia}/edit', [PagoController::class, 'edit'])->name('admin.pagos.edit')->middleware(['auth', 'can:admin.pagos.index']);
 Route::put('/admin/pagos/{tipo}/{referencia}', [PagoController::class, 'update'])->name('admin.pagos.update')->middleware(['auth', 'can:admin.pagos.index']);
 Route::patch('/admin/pagos/{tipo}/{referencia}/anular', [PagoController::class, 'anular'])->name('admin.pagos.anular')->middleware(['auth', 'can:admin.pagos.index']);
+
+// Pasarela de pago Libelula: envia una obligacion a la pasarela y confirma el pago manualmente
+Route::get('/admin/pagos/pagar-en-linea', [PagoPasarelaController::class, 'pagarEnLinea'])->name('admin.pagos.pagar-en-linea')->middleware(['auth', 'can:admin.pagos.index']);
+Route::post('/admin/pagos/confirmar-pago', [PagoPasarelaController::class, 'confirmarPago'])->name('admin.pagos.confirmar-pago')->middleware(['auth', 'can:admin.pagos.index']);
 
 // CU23: Gestionar Ficha Medica - CRUD de informacion medica por estudiante.
 Route::resource('/admin/fichas-medicas', FichaMedicaController::class, ['as' => 'admin'])

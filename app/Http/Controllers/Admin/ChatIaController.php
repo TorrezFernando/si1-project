@@ -184,7 +184,7 @@ No respondas con código markdown (sin ```json) en el cuerpo del mensaje, solo d
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-            ])->post("https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent?key={$apiKey}", [
+            ])->post("https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={$apiKey}", [
                 'contents' => [
                     [
                         'parts' => [

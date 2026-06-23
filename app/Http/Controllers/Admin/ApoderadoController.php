@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 // CU04: Controlador para gestionar tutores/apoderados y sus estudiantes vinculados.
 class ApoderadoController extends Controller
@@ -69,7 +70,7 @@ class ApoderadoController extends Controller
         // CU01: Valida las credenciales que usara el tutor para iniciar sesion.
         $credenciales = $request->validate([
             'username' => ['required', 'string', 'max:50', 'unique:usuario,username'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'password' => ['required', 'string', 'confirmed', Password::defaults()],
         ]);
         // CU04 y CU03: Valida los estudiantes que quedaran bajo este tutor.
         $alumnos = $this->validarAlumnos($request);
@@ -124,7 +125,7 @@ class ApoderadoController extends Controller
                 'max:50',
                 Rule::unique('usuario', 'username')->ignore(optional($usuarioActual)->id_user, 'id_user'),
             ],
-            'password' => ['nullable', 'string', 'min:6', 'confirmed'],
+            'password' => ['nullable', 'string', 'confirmed', Password::defaults()],
         ]);
         // CU04 y CU03: Revalida estudiantes seleccionados.
         $alumnos = $this->validarAlumnos($request);

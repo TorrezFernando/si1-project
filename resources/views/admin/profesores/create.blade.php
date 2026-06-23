@@ -129,6 +129,7 @@
                             <label>Contraseña <b class="text-danger">(*)</b></label>
                             <input type="password" class="form-control @error('password') is-invalid @enderror"
                                    name="password" required>
+                            <small class="form-text text-muted">Minimo 8 caracteres, con mayusculas, minusculas, numeros y simbolos.</small>
                             @error('password') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
                     </div>

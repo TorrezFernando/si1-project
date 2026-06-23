@@ -90,7 +90,7 @@ class AdminResetPasswordController extends Controller
                 'required',
                 'string',
                 'confirmed',
-                Password::min(8)->letters()->mixedCase()->numbers()
+                Password::defaults()
             ],
         ]);
 

@@ -21,6 +21,7 @@
 <div class="form-group">
     <label>Contrasena {{ isset($usuario) ? '' : '*' }}</label>
     <input type="password" name="password" class="form-control" {{ isset($usuario) ? '' : 'required' }}>
+    <small class="form-text text-muted">Minimo 8 caracteres, con mayusculas, minusculas, numeros y simbolos.</small>
     @if(isset($usuario))
         <small class="form-text text-muted">Dejar vacio para mantener la contrasena actual.</small>
     @endif

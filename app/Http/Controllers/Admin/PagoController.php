@@ -35,10 +35,36 @@ class PagoController extends Controller
                 });
             })
             ->when($tipo, fn (Collection $items) => $items->where('tipo', $tipo))
-            ->when($estado, fn (Collection $items) => $items->where('estado_pago', $estado))
-            ->values();
+            // Filtro especial: solo obligaciones con transaccion pendiente en pasarela
+            ->when($estado === 'Pasarela Pendiente', function (Collection $items) {
+                $pendientes = DB::table('pasarela_transacciones')
+                    ->where('estado', 'pendiente')
+                    ->get()
+                    ->keyBy(fn ($t) => $t->tipo . '_' . $t->id_referencia);
 
-        $totalPendiente = $pagos->where('estado_pago', 'Pendiente')->sum('monto_pendiente');
+                return $items->filter(fn ($item) => isset($pendientes[$item->tipo . '_' . $item->id_referencia]));
+            })
+            ->when($estado && $estado !== 'Pasarela Pendiente', fn (Collection $items) => $items->where('estado_pago', $estado))
+            ->values()
+            // Adjuntar datos de la pasarela a cada item (si tiene transaccion pendiente)
+            ->pipe(function (Collection $items) {
+                $pendientes = DB::table('pasarela_transacciones')
+                    ->where('estado', 'pendiente')
+                    ->get()
+                    ->keyBy(fn ($t) => $t->tipo . '_' . $t->id_referencia);
+
+                return $items->map(function ($item) use ($pendientes) {
+                    $key = $item->tipo . '_' . $item->id_referencia;
+                    $item->pasarela_pendiente = isset($pendientes[$key]);
+                    $item->pasarela_transaccion_id = $pendientes[$key]->id ?? null;
+                    $item->pasarela_url = $pendientes[$key]->url_pasarela ?? null;
+                    return $item;
+                });
+            });
+
+        // Totales separados: pendiente (sin pasarela), en pasarela, y pagado
+        $totalPendiente = $pagos->where('estado_pago', 'Pendiente')->where('pasarela_pendiente', false)->sum('monto_pendiente');
+        $totalPasarela = $pagos->where('pasarela_pendiente', true)->sum('monto_pendiente');
         $totalPagado = $pagos->where('estado_pago', 'Pagado')->sum('monto_pagado');
 
         $page = (int) $request->input('page', 1);
@@ -57,10 +83,11 @@ class PagoController extends Controller
             'tipo',
             'estado',
             'totalPendiente',
+            'totalPasarela',
             'totalPagado'
         ) + [
             'tipos' => self::TIPOS,
-            'estados' => self::ESTADOS,
+            'estados' => array_merge(self::ESTADOS, ['Pasarela Pendiente']), // Filtro adicional para pasarela
         ]);
     }
 

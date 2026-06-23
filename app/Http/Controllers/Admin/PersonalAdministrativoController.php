@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 // CU24 y CU01: Controlador para gestionar personal administrativo y su usuario de acceso.
 class PersonalAdministrativoController extends Controller
@@ -59,7 +60,7 @@ class PersonalAdministrativoController extends Controller
             'telefono' => ['nullable', 'string', 'max:20'],
             'correo' => ['nullable', 'email', 'max:100'],
             'username' => ['required', 'string', 'max:50', 'unique:usuario,username'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'password' => ['required', 'string', 'confirmed', Password::defaults()],
         ]);
 
         // CU24 y CU01: Usa transaccion para crear usuario y personal administrativo juntos.
@@ -112,7 +113,7 @@ class PersonalAdministrativoController extends Controller
                 'max:50',
                 Rule::unique('usuario', 'username')->ignore(optional($personalAdministrativo->usuario)->id_user, 'id_user'),
             ],
-            'password' => ['nullable', 'string', 'min:6', 'confirmed'],
+            'password' => ['nullable', 'string', 'confirmed', Password::defaults()],
         ]);
 
         // CU24 y CU01: Guarda los cambios en bloque para conservar consistencia.

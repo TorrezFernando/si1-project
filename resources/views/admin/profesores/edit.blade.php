@@ -35,6 +35,7 @@
                         <div class="form-group">
                             <label>Nueva contraseña</label>
                             <input type="password" class="form-control" name="password">
+                            <small class="form-text text-muted">Minimo 8 caracteres, con mayusculas, minusculas, numeros y simbolos.</small>
                             <small class="text-muted">Deje este campo vacio para mantener la contraseña actual.</small>
                             @error('password')
                                 <small style="color: red">{{ $message }}</small>

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rules\Password;
 
 // Proveedor principal: registra reglas globales de permisos y configuracion de Laravel.
 class AppServiceProvider extends ServiceProvider
@@ -42,6 +43,11 @@ class AppServiceProvider extends ServiceProvider
                 ->where('rf.id_rol', (int) $user->id_rol)
                 ->where('f.nombre', $ability)
                 ->exists() ?: null;
+        });
+
+        // Regla unica de contrasena: minimo 8 caracteres, mayuscula, minuscula, numero y simbolo.
+        Password::defaults(function () {
+            return Password::min(8)->letters()->mixedCase()->numbers()->symbols();
         });
 
         // CU01: Gate simple para administrador.

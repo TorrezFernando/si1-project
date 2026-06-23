@@ -7,12 +7,17 @@
 @stop
 
 @section('content')
-    {{-- Stats cards --}}
+    {{-- Stats cards: total pendiente (sin pasarela), en pasarela, y pagado --}}
     <div class="stats-grid" style="margin-bottom: 1.5rem;">
         <div class="stat-card orange">
             <div class="stat-icon si-orange">⏳</div>
             <div class="stat-number">Bs. {{ number_format((float) $totalPendiente, 2) }}</div>
             <div class="stat-label">Total pendiente</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <div class="stat-icon" style="background: rgba(255,255,255,0.2);">🌐</div>
+            <div class="stat-number">Bs. {{ number_format((float) ($totalPasarela ?? 0), 2) }}</div>
+            <div class="stat-label">En pasarela</div>
         </div>
         <div class="stat-card green">
             <div class="stat-icon si-green">✅</div>
@@ -99,10 +104,14 @@
                                     @endphp
                                     <span class="status-badge {{ $estadoColor }}" style="{{ $pago->estado_pago === 'Pendiente' ? 'background: #fef3c7; color: #92400e;' : '' }}">
                                         @if($pago->estado_pago !== 'Pendiente')
-                                            <span class="status-dot"></span>
+                                                <span class="status-dot"></span>
                                         @endif
                                         {{ $pago->estado_pago }}
                                     </span>
+                                    {{-- Indicador de que el pago fue enviado a la pasarela --}}
+                                    @if($pago->pasarela_pendiente ?? false)
+                                        <br><small style="color: #d97706; font-size: 0.72rem;"><i class="fas fa-globe mr-1"></i>En pasarela</small>
+                                    @endif
                                     @if($pago->motivo_anulacion)
                                         <br><small style="color: #94a3b8; font-size: 0.72rem;">{{ $pago->motivo_anulacion }}</small>
                                     @endif
@@ -132,11 +141,36 @@
                                                 </button>
                                             </form>
                                         </div>
+                                    {{-- Si ya fue enviado a pasarela: boton para ir y boton para confirmar manualmente --}}
+                                    @elseif($pago->pasarela_pendiente ?? false)
+                                        <div style="display: flex; gap: 3px; flex-wrap: wrap;">
+                                            <a href="{{ $pago->pasarela_url ?? 'https://libelula.bo' }}"
+                                               class="btn btn-sm btn-warning" target="_blank"
+                                               style="border-radius: 8px; font-size: 0.78rem; padding: 0.3rem 0.6rem; color: #fff; background: #d97706;">
+                                                <i class="fas fa-external-link-alt mr-1"></i> Ir a pasarela
+                                            </a>
+                                            <form action="{{ route('admin.pagos.confirmar-pago') }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                <input type="hidden" name="id" value="{{ $pago->pasarela_transaccion_id }}">
+                                                <button type="submit" class="btn btn-sm btn-success"
+                                                        style="border-radius: 8px; font-size: 0.78rem; padding: 0.3rem 0.6rem;">
+                                                    <i class="fas fa-check mr-1"></i> Confirmar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    {{-- Pendiente sin pasarela: boton de pago manual y boton para enviar a pasarela --}}
                                     @else
-                                        <a href="{{ route('admin.pagos.create', ['tipo' => $pago->tipo, 'referencia' => $pago->id_referencia]) }}"
-                                           class="btn btn-sm btn-primary" style="border-radius: 8px; font-size: 0.78rem; padding: 0.3rem 0.6rem;">
-                                            <i class="fas fa-cash-register mr-1"></i> Pagar
-                                        </a>
+                                        <div style="display: flex; gap: 3px; flex-wrap: wrap;">
+                                            <a href="{{ route('admin.pagos.create', ['tipo' => $pago->tipo, 'referencia' => $pago->id_referencia]) }}"
+                                               class="btn btn-sm btn-primary" style="border-radius: 8px; font-size: 0.78rem; padding: 0.3rem 0.6rem;">
+                                                <i class="fas fa-cash-register mr-1"></i> Pagar
+                                            </a>
+                                            <a href="{{ route('admin.pagos.pagar-en-linea', ['tipo' => $pago->tipo, 'id_referencia' => $pago->id_referencia]) }}"
+                                               class="btn btn-sm" target="_blank"
+                                               style="border-radius: 8px; font-size: 0.78rem; padding: 0.3rem 0.6rem; border: 1px solid #d97706; color: #d97706;">
+                                                <i class="fas fa-globe mr-1"></i> En línea
+                                            </a>
+                                        </div>
                                     @endif
                                 </td>
                             </tr>

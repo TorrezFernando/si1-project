@@ -12,6 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->appendToGroup('web', \App\Http\Middleware\LogBitacoraActions::class);
+        // Excluir el callback de la pasarela de la proteccion CSRF
+        // (Libelula envia la notificacion sin token de sesion)
+        $middleware->validateCsrfTokens(except: [
+            'pasarela/callback',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
