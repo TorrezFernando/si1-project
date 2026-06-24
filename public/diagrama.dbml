@@ -1,0 +1,24 @@
+table configaciones{
+    ID int [pk, increment] // primary key, auto-increment
+    nombre varchar 
+    descripcion varchar
+    direccion varchar
+    telefono varchar
+    divisa varchar
+    correo_electronico varchar
+    web varchar
+    logo varchar
+}
+
+table gestiones{
+    ID int [pk, increment] // primary key, auto-increment
+    nombre varchar 
+}
+table niveles{
+    ID int [pk, increment] // primary key, auto-increment
+    nombre varchar 
+}
+table turnos{
+    ID int [pk, increment] // primary key, auto-increment
+    nombre varchar 
+}
